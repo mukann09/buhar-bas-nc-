@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İnteraktif Buhar Basıncı Grafiği</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #container {
+            width: 80%;
+            max-width: 800px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        #slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+        #chart {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Farklı Sıcaklıklarda Suyun Buhar Basıncı</h1>
+        <input type="range" id="slider" min="0" max="100" step="1" value="0">
+        <p>Sıcaklık: <span id="temperature">0</span> °C</p>
+        <p>Buhar Basıncı: <span id="vaporPressure">4.58</span> mmHg</p>
+        <canvas id="chart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Veri noktaları
+        const dataPoints = [
+            { temperature: 0, vaporPressure: 4.58 },
+            { temperature: 5, vaporPressure: 6.54 },
+            { temperature: 10, vaporPressure: 9.21 },
+            { temperature: 15, vaporPressure: 12.79 },
+            { temperature: 20, vaporPressure: 17.54 },
+            { temperature: 25, vaporPressure: 23.76 },
+            { temperature: 30, vaporPressure: 31.82 },
+            { temperature: 35, vaporPressure: 42.18 },
+            { temperature: 40, vaporPressure: 55.32 },
+            { temperature: 45, vaporPressure: 71.88 },
+            { temperature: 50, vaporPressure: 92.51 },
+            { temperature: 55, vaporPressure: 118.04 },
+            { temperature: 60, vaporPressure: 148.98 },
+            { temperature: 65, vaporPressure: 186.27 },
+            { temperature: 70, vaporPressure: 231.98 },
+            { temperature: 75, vaporPressure: 287.54 },
+            { temperature: 80, vaporPressure: 355.07 },
+            { temperature: 85, vaporPressure: 436.80 },
+            { temperature: 90, vaporPressure: 534.00 },
+            { temperature: 95, vaporPressure: 649.15 },
+            { temperature: 100, vaporPressure: 760.00 }
+        ];
+
+        // Elemanları alma
+        const slider = document.getElementById('slider');
+        const temperatureText = document.getElementById('temperature');
+        const vaporPressureText = document.getElementById('vaporPressure');
+        const ctx = document.getElementById('chart').getContext('2d');
+
+        // Grafiği oluştur
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dataPoints.map(point => point.temperature),
+                datasets: [{
+                    label: 'Suyun Buhar Basıncı (mmHg)',
+                    data: dataPoints.map(point => point.vaporPressure),
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Sıcaklık (°C)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Buhar Basıncı (mmHg)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Sıcaklığa göre buhar basıncını güncelle
+        slider.addEventListener('input', function() {
+            const temperature = parseInt(slider.value);
+            temperatureText.innerText = temperature;
+
+            // En yakın veri noktasını bul
+            let vaporPressure = dataPoints[0].vaporPressure;
+            for (let i = 0; i < dataPoints.length; i++) {
+                if (temperature <= dataPoints[i].temperature) {
+                    vaporPressure = dataPoints[i].vaporPressure;
+                    break;
+                }
+            }
+            vaporPressureText.innerText = vaporPressure.toFixed(2);
+        });
+    </script>
+</body>
+</html>
